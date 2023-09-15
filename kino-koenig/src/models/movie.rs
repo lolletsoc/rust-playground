@@ -15,11 +15,12 @@ struct MovieJson {
     path: String,
 }
 
+const MOVIES_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/", "movies");
+
 impl TryInto<Movie> for &MovieJson {
     type Error = ();
     fn try_into(self) -> Result<Movie, Self::Error> {
-        let movies_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/", "movies", "/");
-        let image_path = Path::new(movies_dir).join(self.path.to_owned());
+        let image_path = Path::new(MOVIES_DIR).join(self.path.to_owned());
         match File::open(image_path) {
             Ok(file) => Ok(Movie { name: self.name.to_owned(), image: file }),
             Err(..) => Err(())
@@ -33,8 +34,7 @@ pub struct Movie {
 }
 
 pub fn load_movies() -> Vec<Movie> {
-    let movies_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/", "movies");
-    let manifest_path = Path::new(movies_dir).join("manifest.json");
+    let manifest_path = Path::new(MOVIES_DIR).join("manifest.json");
     match File::open(manifest_path) {
         Ok(file) => {
             let movie_json: MoviesManifest = serde_json::from_reader(file).unwrap();
