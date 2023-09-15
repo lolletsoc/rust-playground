@@ -1,0 +1,9 @@
+{
+  "movies": [
+    {
+      "name": "The Big Lebowski",
+      "released": 1998,
+      "path": "images/the_big_lebowski.png"
+    }
+  ]
+}
