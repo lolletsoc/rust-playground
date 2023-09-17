@@ -15,14 +15,14 @@ struct MovieJson {
     path: String,
 }
 
-const MOVIES_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/", "movies");
+pub const MOVIES_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/", "movies");
 
 impl TryInto<Movie> for &MovieJson {
     type Error = ();
     fn try_into(self) -> Result<Movie, Self::Error> {
         let image_path = Path::new(MOVIES_DIR).join(self.path.to_owned());
-        match File::open(image_path) {
-            Ok(file) => Ok(Movie { name: self.name.to_owned(), image: file }),
+        match image_path.try_exists() {
+            Ok(_) => Ok(Movie { name: self.name.to_owned(), released: self.released, image_path: self.path.to_owned() }),
             Err(..) => Err(())
         }
     }
@@ -30,7 +30,8 @@ impl TryInto<Movie> for &MovieJson {
 
 pub struct Movie {
     pub name: String,
-    pub image: File,
+    pub released: u16,
+    pub image_path: String,
 }
 
 pub fn load_movies() -> Vec<Movie> {
